@@ -1,0 +1,150 @@
+body {
+  background-color: #243E36;
+}
+
+.isWorking {
+  display:none;
+}
+
+.notWorking {
+  display:inline-block;
+}
+
+/* font-family: 'Monoton', cursive;
+font-family: 'Bungee Shade', cursive;
+font-family: 'Pacifico', cursive; */
+h1 {
+  color: #C2A83E;
+  font-family: 'Monoton', cursive;
+  font-size: 2em;
+  text-shadow: -3px 4px 1px rgba(150, 150, 150, 1);
+}
+
+h2 {
+  font-family: 'Pacifico', cursive;
+  color: #F1F7ED;
+  font-size: 2em;
+}
+
+.block {
+  background-color: rgba(126, 161, 129, 0.3);
+  width: 90%;
+  margin: 0 auto;
+  border-radius: 15px;
+  padding: 10px 0;
+}
+
+.btn {
+  color: #C2A83E;
+  font-size: 2em;
+  background: none;
+  outline: none !important;
+}
+
+.btn:hover, .btn:focus, .btn:active {
+    color: #fff;
+    box-shadow: none;
+ }
+
+#sessionNum, #breakNum {
+  font-family: 'Bungee Shade', cursive;
+  color: #F1F7ED;
+  display: inline;
+  font-size: 2em;
+}
+
+.mainNum {
+  font-family: 'Bungee Shade', cursive;
+  color: #F1F7ED;
+  font-size: 4em;
+}
+
+@media screen and (min-width: 768px) {
+  h1 {
+    color: #C2A83E;
+    font-family: 'Monoton', cursive;
+    font-size: 4em;
+    text-shadow: -3px 4px 1px rgba(150, 150, 150, 1);
+  }
+
+  h2 {
+    font-family: 'Pacifico', cursive;
+    color: #F1F7ED;
+    font-size: 2.5em;
+  }
+
+  .block {
+    background-color: rgba(126, 161, 129, 0.3);
+    width: 90%;
+    margin: 0 auto;
+    border-radius: 15px;
+    padding: 10px 0;
+  }
+
+  .btn {
+    color: #C2A83E;
+    font-size: 2.5em;
+    background: none;
+    outline: none !important;
+  }
+
+  #sessionNum, #breakNum {
+    font-family: 'Bungee Shade', cursive;
+    color: #F1F7ED;
+    display: inline;
+    font-size: 3em;
+  }
+
+  .mainNum {
+    font-family: 'Bungee Shade', cursive;
+    color: #F1F7ED;
+    font-size: 5em;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .block {
+    height: 400px;
+  }
+
+  h1 {
+    color: #C2A83E;
+    font-family: 'Monoton', cursive;
+    font-size: 5em;
+    text-shadow: -3px 4px 1px rgba(150, 150, 150, 1);
+  }
+
+  h2 {
+    font-family: 'Pacifico', cursive;
+    color: #F1F7ED;
+    font-size: 3em;
+  }
+
+  .block {
+    background-color: rgba(126, 161, 129, 0.3);
+    width: 90%;
+    margin: 0 auto;
+    border-radius: 15px;
+    padding: 10px 0;
+  }
+
+  .btn {
+    color: #C2A83E;
+    font-size: 3.5em;
+    background: none;
+    outline: none !important;
+  }
+
+  #sessionNum, #breakNum {
+    font-family: 'Bungee Shade', cursive;
+    color: #F1F7ED;
+    display: inline;
+    font-size: 4em;
+  }
+
+  .mainNum {
+    font-family: 'Bungee Shade', cursive;
+    color: #F1F7ED;
+    font-size: 6em;
+  }
+}

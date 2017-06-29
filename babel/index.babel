@@ -1,0 +1,302 @@
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      //WorkTime default props
+      workMin: 25,
+      selectedTime: 25 * 60,
+      time: {},
+      seconds: 1500,
+      status:'notWorking',
+      //BreakTime default props
+      breakMin: 5,
+      selectedBreakTime: 5 * 60,
+      breakTime: { m: 5, s: 0 },
+      breakInSeconds: 300
+    };
+
+    this.sound = document.getElementById("sound");
+    this.addMin = this.addMin.bind(this);
+    this.subMin = this.subMin.bind(this);
+    this.addBreakMin = this.addBreakMin.bind(this);
+    this.subBreakMin = this.subBreakMin.bind(this);
+    this.timer = null;
+    this.breakTimer = null;
+    this.startTimer = this.startTimer.bind(this);
+    this.pauseTimer = this.pauseTimer.bind(this);
+    this.resetTimer = this.resetTimer.bind(this);
+    this.countDown = this.countDown.bind(this);
+    this.startBreakTimer = this.startBreakTimer.bind(this);
+    this.pauseBreakTimer = this.pauseBreakTimer.bind(this);
+    this.resetBreakTimer = this.resetBreakTimer.bind(this);
+    this.breakCountDown = this.breakCountDown.bind(this);
+  }
+  
+  workStart(){
+    this.setStatus({status:isWorking});
+  }
+
+  addMin() {
+    this.setState({ workMin: this.state.workMin + 1 }, () => {
+      //update selectedTime
+      this.setState({ selectedTime: this.state.workMin * 60 }, () => {
+        this.setState({ seconds: this.state.selectedTime });
+        this.componentDidMount();
+      });
+    });
+  }
+
+  subMin() {
+    if (this.state.workMin > 1) {
+      this.setState({ workMin: this.state.workMin - 1 }, () => {
+        //update selectedTime
+        this.setState({ selectedTime: this.state.workMin * 60 }, () => {
+          this.setState({ seconds: this.state.selectedTime });
+          this.componentDidMount();
+        });
+      });
+    }
+  }
+
+  addBreakMin() {
+    this.setState({ breakMin: this.state.breakMin + 1 }, () => {
+      //update selectedTime
+      this.setState({ selectedBreakTime: this.state.breakMin * 60 }, () => {
+        this.setState({ breakInSeconds: this.state.selectedBreakTime });
+        this.componentDidMountBreak();
+      });
+    });
+  }
+
+  subBreakMin() {
+    if (this.state.breakMin > 1) {
+      this.setState({ breakMin: this.state.breakMin - 1 }, () => {
+        //update selectedTime
+        this.setState({ selectedBreakTime: this.state.breakMin * 60 }, () => {
+          this.setState({ breakInSeconds: this.state.selectedBreakTime });
+          this.componentDidMountBreak();
+        });
+      });
+    }
+  }
+
+  secondsToTime(secs) {
+    let hours = Math.floor(secs / (60 * 60));
+
+    let divisor_for_minutes = secs % (60 * 60);
+    let minutes = Math.floor(divisor_for_minutes / 60);
+
+    let divisor_for_seconds = divisor_for_minutes % 60;
+    let seconds = Math.ceil(divisor_for_seconds);
+
+    let obj = {
+      h: hours,
+      m: minutes,
+      s: seconds
+    };
+    return obj;
+  }
+
+  //converts seconds to h:m:s update time object
+  componentDidMount() {
+    let timeLeftVar = this.secondsToTime(this.state.selectedTime);
+    this.setState({ time: timeLeftVar });
+  }
+
+  componentDidMountBreak() {
+    let timeLeftVar = this.secondsToTime(this.state.selectedBreakTime);
+    this.setState({ breakTime: timeLeftVar });
+  }
+
+  startTimer() {
+    if (this.timer !== null) return;
+    this.setState({status:'isWorking'});
+    this.timer = setInterval(this.countDown, 1000);
+  }
+
+  pauseTimer() {
+    clearInterval(this.timer);
+    this.timer = null;
+    this.setState({status:'notWorking'});
+  }
+
+  resetTimer() {
+    clearInterval(this.timer);
+    this.timer = null;
+    this.setState({status:'notWorking'});
+    this.setState({ 
+      seconds: this.state.selectedTime,
+      breakInSeconds: this.state.selectedBreakTime }, () => {
+      this.componentDidMount();
+      this.componentDidMountBreak();
+    });
+  }
+
+  startBreakTimer() {
+    if (this.breakTimer !== null) return;
+    this.breakTimer = setInterval(this.breakCountDown, 1000);
+  }
+
+  pauseBreakTimer() {
+    clearInterval(this.breakTimer);
+    this.breakTimer = null;
+  }
+
+  resetBreakTimer() {
+    clearInterval(this.breakTimer);
+    this.breakTimer = null;
+    this.setState({ breakInSeconds: this.state.selectedBreakTime }, () => {
+      this.componentDidMountBreak();
+    });
+  }
+
+  countDown() {
+    // Remove one second, set state so a re-render happens.
+    let seconds = this.state.seconds - 1;
+    this.setState({
+      time: this.secondsToTime(seconds),
+      seconds: seconds
+    });
+
+    // Check if we're at zero.
+    if (seconds == 0) {
+      this.sound.play();
+      clearInterval(this.timer);
+      //start BREAK TIMER HERE
+      if (this.breakTimer !== null) return;
+      this.setState({status:'takingBreak'});
+      this.breakTimer = setInterval(this.breakCountDown, 1000);
+    }
+  }
+
+  breakCountDown() {
+    // Remove one second, set state so a re-render happens.
+    let seconds = this.state.breakInSeconds - 1;
+    this.setState({
+      breakTime: this.secondsToTime(seconds),
+      breakInSeconds: seconds
+    });
+
+    // Check if we're at zero.
+    if (seconds == 0) {
+      this.sound.play();
+      clearInterval(this.breakTimer);
+      this.breakTimer = null;
+      this.setState({status:'finished'});
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Pomodoro Clock</h1>
+        <div className="block">
+          <div className="row">
+            <WorkTime addMin={this.addMin} subMin={this.subMin} workMin={this.state.workMin}/>
+            <BreakTime
+              addBreakMin={this.addBreakMin}
+              subBreakMin={this.subBreakMin}
+              breakMin={this.state.breakMin}
+            />
+
+          </div>
+          <div className="row">
+            <Timer
+              selectedTime={this.state.selectedTime}
+              time={this.state.time}
+              startTimer={this.startTimer}
+              pauseTimer={this.pauseTimer}
+              resetTimer={this.resetTimer}
+              selectedBreakTime={this.state.selectedBreakTime}
+              breakTime={this.state.breakTime}
+              startBreakTimer={this.startBreakTimer}
+              pauseBreakTimer={this.pauseBreakTimer}
+              resetBreakTimer={this.resetBreakTimer}
+              status={this.state.status}
+            />
+          </div>
+          <div id="space"></div>
+        </div>
+      </div>
+    );
+  }
+}
+
+const WorkTime = props => {
+  return (
+    <div id="sessionTime" className="col-sm-6 col-md-6">
+      <h2 id="title-session">Session Time</h2>
+      <button id="minus-5" className="btn" onClick={props.subMin}>-</button>
+      <h3 id="sessionNum">{props.workMin}</h3>
+      <button id="plus-5" className="btn" onClick={props.addMin}>+</button>
+    </div>
+  );
+};
+
+const BreakTime = props => {
+  return (
+    <div id="breakTime" className="col-sm-6 col-md-6">
+      <h2 id="title-session">Break Time</h2>
+      <button id="minus-5-break" className="btn" onClick={props.subBreakMin}>
+        -
+      </button>
+      <h3 id="breakNum">{props.breakMin}</h3>
+      <button id="plus-5-break" className="btn" onClick={props.addBreakMin}>
+        +
+      </button>
+    </div>
+  );
+};
+
+const Timer = props => {
+  return (
+    <div>
+      <h3 className={classNames({
+          "mainNum":true,
+          "hidden":props.status === "takingBreak"
+        })}>{props.time.m} : {props.time.s}</h3>
+      
+      <h3 className={classNames({
+          "mainNum":true,
+          "hidden":props.status !== "takingBreak"
+        })}>{props.breakTime.m} : {props.breakTime.s}</h3>
+      
+      <button id="start" className={classNames({
+            'btn' : true,
+            'hidden' : props.status === 'isWorking'|| props.status === 'takingBreak'
+          })} onClick={props.startTimer}>Start</button>
+      
+      <button id="pause" className={classNames({
+            'btn' : true,
+            'hidden' : props.status !== 'isWorking'
+          })} onClick={props.pauseTimer}>Pause</button>
+      
+      <button id="reset" className={classNames({
+            'btn' : true,
+            'hidden' : props.status === 'takingBreak'
+          })} onClick={props.resetTimer}>Reset</button>
+      
+      <button className={classNames({
+            'btn' : true,
+            'hidden' : props.status !== 'takingBreak' ||
+          props.status === 'finished'
+          })} onClick={props.startBreakTimer}>StartB</button>
+      
+      <button className={classNames({
+            'btn' : true,
+            'hidden' : props.status !== 'takingBreak' ||
+          props.status === 'finished'
+          })} onClick={props.pauseBreakTimer}>PauseB</button>
+      
+      <button className={classNames({
+            'btn' : true,
+            'hidden' : props.status !== 'takingBreak'||
+          props.status === 'finished'
+          })} onClick={props.resetBreakTimer}>ResetB</button>
+    </div>
+  );
+};
+
+
+ReactDOM.render(<App />, document.querySelector(".container-fluid"));
